@@ -17,7 +17,7 @@ class AssetPair():
     handles things associated with asset pairs.
     """
 
-    VALID_PAIRS = set(API.query_public('AssetPairs')['result'].keys())
+    VALID_PAIR_NAMES = set(API.query_public('AssetPairs')['result'].keys())
 
     @classmethod
     def get_pair_name(cls, origin, target):
@@ -62,7 +62,7 @@ class AssetPair():
         check if the *pair of criptocurrency* is valid pair for the Kraken API.
         """
 
-        if cls.get_pair_name(origin, target) in cls.VALID_PAIRS:
+        if cls.get_pair_name(origin, target) in cls.VALID_PAIR_NAMES:
             return True
         return False
 
@@ -72,7 +72,7 @@ class AssetPair():
         check if the *string* is valid asset-pair-string for Kraken API
         """
 
-        if pair_name in cls.VALID_PAIRS:
+        if pair_name in cls.VALID_PAIR_NAMES:
             return True
         return False
 
@@ -105,8 +105,8 @@ for asset in balance:
 
 # if the query contains asset pairs that are not valid,
 # display that information and exit tht program.
-if not query <= AssetPair.VALID_PAIRS:
-    sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_PAIRS))
+if not query <= AssetPair.VALID_PAIR_NAMES:
+    sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_PAIR_NAMES))
 
 # join the query and make a string => 'XXBTZJPY,BCHXBT'
 query = ','.join(query)
