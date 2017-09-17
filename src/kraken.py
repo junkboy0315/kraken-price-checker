@@ -13,16 +13,39 @@ balance = []
 query = set()
 
 class AssetPair():
-    """Handle asset pairs."""
+    """
+    handles things associated with asset pairs.
+    """
 
     VALID_PAIRS = set(API.query_public('AssetPairs')['result'].keys())
 
     @classmethod
     def get_pair_name(cls, origin, target):
+        """ Get an asset-pair-name used for Kraken API
 
-        # pairs contains following asset class don't contain first 'X' and inner 'Z'.
+        Acquire the asset-pair-name string like 'XXBTZJPY'
+        from the pair of the asset name.
+        These are used for the query string of the Kraken API.
+
+        Args:
+            origin(str): Original asset name. e.g. 'XRP'
+            target(str): Target asset name. e.g. 'JPY' or 'XRP'
+
+        Returns:
+            str: string like 'XXBTZJPY' which is NOT checked if valid for Kraken API
+
+        """
+
+        # asset-pair-string which contains the following assets is irregular.
+        # ['BCH', 'DASH', 'EOS', 'GNO']
+        #
+        # which means that
+        # - the first 'X' character for crypto-currency
+        # - the first 'Z' character for normal-currency
+        # DOES NOT exist in the asset-pair-string.
         #   e.g. 'BCHXBT', 'DASHXBT'
-        # but others contains like as follows.
+        #
+        # but others contains these character like as follows.
         #   e.g. 'XXBTZJPY', 'XETHZEUR'
         IRREGULAR_ASSET_CLASSES = ['BCH', 'DASH', 'EOS', 'GNO']
 
@@ -35,12 +58,20 @@ class AssetPair():
 
     @classmethod
     def is_valid_pair(cls, origin, target):
+        """
+        check if the *pair of criptocurrency* is valid pair for the Kraken API.
+        """
+
         if cls.get_pair_name(origin, target) in cls.VALID_PAIRS:
             return True
         return False
 
     @classmethod
     def is_valid_pair_name(cls, pair_name):
+        """
+        check if the *string* is valid asset-pair-string for Kraken API
+        """
+
         if pair_name in cls.VALID_PAIRS:
             return True
         return False
@@ -64,10 +95,10 @@ for name, amount in API.query_private('Balance')['result'].items():
 # calc asset pairs need to fetch
 for asset in balance:
     if AssetPair.is_valid_pair(asset.name, TARGET_CURRENCY):
-        # get the amount of money directly
+        # asset which can be exchanged directly
         query.add(AssetPair.get_pair_name(asset.name, TARGET_CURRENCY))
     else:
-        # get the amount money via XBT
+        # asset which can be exchanged via XBT
         asset.calc_via_XBT_needed = True
         query.add(AssetPair.get_pair_name(asset.name, 'XBT'))
         query.add(AssetPair.get_pair_name('XBT', TARGET_CURRENCY))
