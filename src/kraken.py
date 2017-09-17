@@ -99,5 +99,9 @@ for asset in balance:
         pair = AssetPair.get_pair_name(asset.name, TARGET_CURRENCY)
         asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
 
+print('-----------------------')
 for asset in balance:
-    print(asset.name, '{:10.0f}'.format(asset.amount_as_money))
+    print('{:6}: {:15,.0f}'.format(asset.name, asset.amount_as_money))
+print('-----------------------')
+print('total : {:15,.0f}'.format(sum([i.amount_as_money for i in balance])))
+print('-----------------------')
