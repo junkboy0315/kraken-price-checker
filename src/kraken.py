@@ -5,9 +5,8 @@ API = krakenex.API(
     key='ylRM81xbtOMiRSV2scfP2G1aZi7k5IG4wMGYslNjZwXvFzmLqK8z2wk3',
     secret='7wcryvE8yj7ogJTB8nneQ4H3OEvszJRg1WAonaayEJTCxK10xni2Wu3368DrZvRmAPhvaCWItYCCWzXfhq42Sw=='
 )
-
-TARGET_CURRENCY = 'JPY'
 CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
+TARGET_CURRENCY = 'JPY'
 
 balance = []
 query = set()
