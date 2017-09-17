@@ -16,11 +16,12 @@ class AssetPair():
     handles things associated with asset pairs.
     """
 
+    # valid asset-pair-names get from the Kraken API
     VALID_PAIR_NAMES = set(API.query_public('AssetPairs')['result'].keys())
 
     @classmethod
     def get_pair_name(cls, origin, target):
-        """ Get an asset-pair-name used for Kraken API
+        """ Get an asset-pair-name used for the Kraken API
 
         Acquire the asset-pair-name string like 'XXBTZJPY'
         from the pair of the asset name.
@@ -31,7 +32,8 @@ class AssetPair():
             target(str): Target asset name. e.g. 'JPY' or 'XRP'
 
         Returns:
-            str: string like 'XXBTZJPY' which is NOT checked if valid for Kraken API
+            str: asset-pair-name like 'XXBTZJPY' which is NOT checked
+                 if it's valid for the Kraken API
 
         """
 
@@ -68,7 +70,7 @@ class AssetPair():
     @classmethod
     def is_valid_pair_name(cls, pair_name):
         """
-        check if the *string* is valid asset-pair-string for Kraken API
+        check if the *string* is valid asset-pair-string for the Kraken API
         """
 
         if pair_name in cls.VALID_PAIR_NAMES:
@@ -91,15 +93,17 @@ for name, amount in API.query_private('Balance')['result'].items():
 
     balance.append(Asset(name, amount))
 
-# calc asset pairs need to fetch
+# find asset-pairs need to be fetched
 for asset in balance:
     if AssetPair.is_valid_pair(asset.name, TARGET_CURRENCY):
-        # asset which can be exchanged directly
+        # query for asset which can be exchanged directly
         query.add(AssetPair.get_pair_name(asset.name, TARGET_CURRENCY))
     else:
-        # asset which can be exchanged via XBT
+        # query for asset which can be exchanged via XBT
         asset.calc_via_XBT_needed = True
+        # Crypt to XBP
         query.add(AssetPair.get_pair_name(asset.name, 'XBT'))
+        # XBT to Target currency
         query.add(AssetPair.get_pair_name('XBT', TARGET_CURRENCY))
 
 # if the query contains asset pairs that are not valid,
@@ -115,7 +119,9 @@ ticker = API.query_public('Ticker', {'pair': query})['result']
 
 for asset in balance:
     if asset.calc_via_XBT_needed:
+        # Crypt to XBP
         pair1 = AssetPair.get_pair_name(asset.name, 'XBT')
+        # XBT to Target currency
         pair2 = AssetPair.get_pair_name('XBT', TARGET_CURRENCY)
 
         result = asset.amount * (
