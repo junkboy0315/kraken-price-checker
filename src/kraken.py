@@ -5,39 +5,38 @@ API = krakenex.API(
     secret='7wcryvE8yj7ogJTB8nneQ4H3OEvszJRg1WAonaayEJTCxK10xni2Wu3368DrZvRmAPhvaCWItYCCWzXfhq42Sw=='
 )
 TARGET_CURRENCY = 'JPY'
-
-kraken_balance = API.query_private('Balance')['result']
-kraken_asset_pairs = API.query_public('AssetPairs')['result']
+BALANCE = API.query_private('Balance')['result']
+ASSET_PAIRS = API.query_public('AssetPairs')['result']
 
 my_balance = []
 
-class AssetClass():
+class Asset():
+    """ An unit reprsent each cryptocurrencies in the bank
+
+    :param name: a name of cryptocurrency
+    :type name: str
+    :param amount: an amount of cryptocurrency
+    :type secret: float
+    :returns: None
+
+    """
     def __init__(self, name, amount):
         self.name = name
         self.amount = float(amount)
-        self.amount_as_XBT = None
         self.amount_as_CURRENCY = None
         self.calc_via_XBT_needed = None
 
-# store balance info to the array
-for name, amount in kraken_balance.items():
-    # get rid of unnecesarry 'X'
-    # e.g. 'XXBT' => 'XBT'
-    if name[0] == 'X':
-        name = name[1::]
-    my_balance.append(AssetClass(name, amount))
-
 def get_pair_name(origin, target):
     '''
-    get the right pair name for the ticker query.
-    
+    get the right pair name for the API query.
+
     if the pair is not contained by the Kraken's pair list,
     return False, otherwise return pair string like 'XXBTZJPY'
     '''
 
-    # pairs of these class doesn't contain 'X' and 'Z'
+    # pairs of these asset class doesn't contain first 'X' and inner 'Z'.
     #   e.g. 'BCHXBT', 'DASHXBT'
-    # but other currencies like as follows
+    # but others contains like as follows.
     #   e.g. 'XXBTZJPY', 'XETHZEUR'
     IRREGULAR_ASSET_CLASSES = ['BCH', 'DASH', 'EOS', 'GNO']
     CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
@@ -57,9 +56,18 @@ def get_pair_name(origin, target):
     return pair_name
 
 def is_right_pair_name(pair_name):
-    if pair_name not in kraken_asset_pairs.keys():
+    if pair_name not in ASSET_PAIRS.keys():
         return False
     return True
+
+# store assets info to the array
+for name, amount in BALANCE.items():
+    # get rid of unnecesarry 'X'
+    # e.g. 'XXBT' => 'XBT'
+    if name[0] == 'X':
+        name = name[1::]
+
+    my_balance.append(Asset(name, amount))
 
 # judge calculation via XBT is needed
 for asset_class in my_balance:
