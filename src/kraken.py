@@ -6,11 +6,10 @@ API = krakenex.API(
     secret='7wcryvE8yj7ogJTB8nneQ4H3OEvszJRg1WAonaayEJTCxK10xni2Wu3368DrZvRmAPhvaCWItYCCWzXfhq42Sw=='
 )
 
-BALANCE = API.query_private('Balance')['result']
 TARGET_CURRENCY = 'JPY'
 CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
 
-my_balance = []
+balance = []
 query = set()
 
 class AssetPair():
@@ -54,16 +53,16 @@ class Asset():
         self.calc_via_XBT_needed = None
 
 # store assets info to the array
-for name, amount in BALANCE.items():
+for name, amount in API.query_private('Balance')['result'].items():
     # get rid of unnecesarry 'X'
     # e.g. 'XXBT' => 'XBT'
     if name[0] == 'X':
         name = name[1::]
 
-    my_balance.append(Asset(name, amount))
+    balance.append(Asset(name, amount))
 
 # calc asset pairs need to fetch
-for asset in my_balance:
+for asset in balance:
     if AssetPair.is_valid_pair(asset.name, TARGET_CURRENCY):
         # get the amount of money directly
         query.add(AssetPair.get_pair_name(asset.name, TARGET_CURRENCY))
@@ -84,8 +83,7 @@ query = ','.join(query)
 # get the ticker data
 ticker = API.query_public('Ticker', {'pair': query})['result']
 
-
-for asset in my_balance:
+for asset in balance:
     if asset.calc_via_XBT_needed:
         pair1 = AssetPair.get_pair_name(asset.name, 'XBT')
         pair2 = AssetPair.get_pair_name('XBT', TARGET_CURRENCY)
@@ -101,5 +99,5 @@ for asset in my_balance:
         pair = AssetPair.get_pair_name(asset.name, TARGET_CURRENCY)
         asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
 
-for asset in my_balance:
+for asset in balance:
     print(asset.name, '{:10.0f}'.format(asset.amount_as_money))
