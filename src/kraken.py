@@ -20,10 +20,10 @@ class AssetPair():
     VALID_PAIR_NAMES = set(API.query_public('AssetPairs')['result'].keys())
 
     @classmethod
-    def get_pair_name(cls, origin, target):
-        """ Get an asset-pair-name used for the Kraken API
+    def generate_pair_name(cls, origin, target):
+        """ Generate an asset-pair-name used for the Kraken API
 
-        Acquire the asset-pair-name string like 'XXBTZJPY'
+        Generate an asset-pair-name string like 'XXBTZJPY'
         from the pair of the asset name.
         These are used for the query string of the Kraken API.
 
@@ -63,7 +63,7 @@ class AssetPair():
         check if the *pair of criptocurrency* is valid pair for the Kraken API.
         """
 
-        if cls.get_pair_name(origin, target) in cls.VALID_PAIR_NAMES:
+        if cls.generate_pair_name(origin, target) in cls.VALID_PAIR_NAMES:
             return True
         return False
 
@@ -97,14 +97,14 @@ for name, amount in API.query_private('Balance')['result'].items():
 for asset in balance:
     if AssetPair.is_valid_pair(asset.name, TARGET_CURRENCY):
         # query for asset which can be exchanged directly
-        query.add(AssetPair.get_pair_name(asset.name, TARGET_CURRENCY))
+        query.add(AssetPair.generate_pair_name(asset.name, TARGET_CURRENCY))
     else:
         # query for asset which can be exchanged via XBT
         asset.calc_via_XBT_needed = True
         # Crypt to XBP
-        query.add(AssetPair.get_pair_name(asset.name, 'XBT'))
+        query.add(AssetPair.generate_pair_name(asset.name, 'XBT'))
         # XBT to Target currency
-        query.add(AssetPair.get_pair_name('XBT', TARGET_CURRENCY))
+        query.add(AssetPair.generate_pair_name('XBT', TARGET_CURRENCY))
 
 # if the query contains asset pairs that are not valid,
 # display that information and exit tht program.
@@ -120,9 +120,9 @@ ticker = API.query_public('Ticker', {'pair': query})['result']
 for asset in balance:
     if asset.calc_via_XBT_needed:
         # Crypt to XBP
-        pair1 = AssetPair.get_pair_name(asset.name, 'XBT')
+        pair1 = AssetPair.generate_pair_name(asset.name, 'XBT')
         # XBT to Target currency
-        pair2 = AssetPair.get_pair_name('XBT', TARGET_CURRENCY)
+        pair2 = AssetPair.generate_pair_name('XBT', TARGET_CURRENCY)
 
         result = asset.amount * (
             float(ticker[pair1]['c'][0]) *
@@ -132,7 +132,7 @@ for asset in balance:
         asset.amount_as_money = result
 
     else:
-        pair = AssetPair.get_pair_name(asset.name, TARGET_CURRENCY)
+        pair = AssetPair.generate_pair_name(asset.name, TARGET_CURRENCY)
         asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
 
 print('-----------------------')

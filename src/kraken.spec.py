@@ -12,10 +12,10 @@ class MyTest(unittest.TestCase):
         self.assertEqual(kraken.AssetPair.is_valid_pair_name('XXBTXXBT'), False)
         self.assertEqual(kraken.AssetPair.is_valid_pair_name('XXRPZJPY'), False)
 
-        self.assertEqual(kraken.AssetPair.get_pair_name('BCH', 'EUR'), 'BCHEUR')
-        self.assertEqual(kraken.AssetPair.get_pair_name('XBT', 'JPY'), 'XXBTZJPY')
-        self.assertEqual(kraken.AssetPair.get_pair_name('ETH', 'USD'), 'XETHZUSD')
-        self.assertEqual(kraken.AssetPair.get_pair_name('XRP', 'XBT'), 'XXRPXXBT')
+        self.assertEqual(kraken.AssetPair.generate_pair_name('BCH', 'EUR'), 'BCHEUR')
+        self.assertEqual(kraken.AssetPair.generate_pair_name('XBT', 'JPY'), 'XXBTZJPY')
+        self.assertEqual(kraken.AssetPair.generate_pair_name('ETH', 'USD'), 'XETHZUSD')
+        self.assertEqual(kraken.AssetPair.generate_pair_name('XRP', 'XBT'), 'XXRPXXBT')
 
 if __name__ == "__main__":
     unittest.main()
