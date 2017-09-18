@@ -210,3 +210,4 @@ for asset in balance:
 print('-----------------------')
 print('total : {:15,.0f}'.format(sum([i.amount_as_money for i in balance])))
 print('-----------------------')
+print('{:>23s}'.format('(' + TARGET_CURRENCY + ')'))
