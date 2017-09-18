@@ -28,7 +28,7 @@ class AssetPair():
         These are used for the query string of the Kraken API.
 
         Args:
-            origin(str): Original asset name. e.g. 'XRP'
+            origin(str): Original asset name. e.g. 'XBT'
             target(str): Target asset name. e.g. 'JPY' or 'XRP'
 
         Returns:
