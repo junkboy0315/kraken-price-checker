@@ -7,6 +7,10 @@ class MyTest(unittest.TestCase):
         pairs = kraken.ApiHelper.get_asset_pairs()
         self.assertEqual({'XXBTZGBP', 'GNOXBT'} <= pairs, True)
 
+        # get_ticker()
+        pairs = kraken.ApiHelper.get_ticker('XXBTZJPY')
+        self.assertIsNotNone(pairs['XXBTZJPY']['c'][0])
+
     def test_class_AssetPair(self):
         # is_valid_pair()
         self.assertEqual(kraken.AssetPair.is_valid_pair('XBT', 'JPY'), True)

@@ -52,6 +52,24 @@ class ApiHelper():
 
         return q['result'].items()
 
+    @classmethod
+    def get_ticker(cls, _query):
+        """
+        Get the ticker data.
+
+        Returns:
+            dict: ticker data you asked.
+                  {'BCHXBT': {....}, 'XXBTZJPY': {....},,,,,}
+
+        """
+
+        q = API.query_public('Ticker', {'pair': _query})
+
+        if q['error']:
+            sys.exit('Failed to fetch Ticker.')
+
+        return q['result']
+
 class AssetPair():
     """
     handles things associated with asset pairs.
@@ -157,7 +175,7 @@ if query - AssetPair.VALID_PAIR_NAMES:
 query = ','.join(query)
 
 # get the ticker data
-ticker = API.query_public('Ticker', {'pair': query})['result']
+ticker = ApiHelper.get_ticker(query)
 
 for asset in balance:
     if asset.calc_via_XBT_needed:
