@@ -1,9 +1,10 @@
+import os
 import sys
 import krakenex
 
 API = krakenex.API(
-    key='ylRM81xbtOMiRSV2scfP2G1aZi7k5IG4wMGYslNjZwXvFzmLqK8z2wk3',
-    secret='7wcryvE8yj7ogJTB8nneQ4H3OEvszJRg1WAonaayEJTCxK10xni2Wu3368DrZvRmAPhvaCWItYCCWzXfhq42Sw=='
+    key=os.environ['KRAKEN_KEY'],
+    secret=os.environ['KRAKEN_SECRET'],
 )
 CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
 TARGET_CURRENCY = 'JPY'
