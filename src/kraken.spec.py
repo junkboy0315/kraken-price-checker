@@ -2,6 +2,10 @@ import unittest
 import kraken
 
 class MyTest(unittest.TestCase):
+    def test_class_ApiHelper(self):
+        # get_asset_pairs()
+        pairs = kraken.ApiHelper.get_asset_pairs()
+        self.assertEqual({'XXBTZGBP', 'GNOXBT'} <= pairs, True)
 
     def test_class_AssetPair(self):
         # is_valid_pair()

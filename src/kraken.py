@@ -11,13 +11,54 @@ TARGET_CURRENCY = 'JPY'
 balance = []
 query = set()
 
+class ApiHelper():
+    """
+    Helper to get data from the API and return the results.
+    """
+
+    @classmethod
+    def get_asset_pairs(cls):
+        """
+        Get the asset-pair-names data.
+
+        Returns:
+            set(str): simple set of asset-pair-name as follows.
+                      {'XXBTZGBP', 'GNOXBT', 'DASHUSD',,,,,}
+
+        """
+
+        q = API.query_public('AssetPairs')
+
+        if q['error']:
+            sys.exit('Failed to fetch AssetPairs.')
+
+        return set(q['result'].keys())
+
+    @classmethod
+    def get_balance(cls):
+        """
+        Get the balance data.
+
+        Returns:
+            dict_items: simple pair of asset and amount as follows.
+                        dict_items([('XXBT', '0.1191648200'), ('XXRP', '4315.45550200'),,,,)])
+
+        """
+
+        q = API.query_private('Balance')
+
+        if q['error']:
+            sys.exit('Failed to fetch Balance.')
+
+        return q['result'].items()
+
 class AssetPair():
     """
     handles things associated with asset pairs.
     """
 
     # valid asset-pair-names get from the Kraken API
-    VALID_PAIR_NAMES = set(API.query_public('AssetPairs')['result'].keys())
+    VALID_PAIR_NAMES = ApiHelper.get_asset_pairs()
 
     @classmethod
     def generate_pair_name(cls, origin, target):
@@ -85,7 +126,7 @@ class Asset():
         self.calc_via_XBT_needed = None
 
 # store assets info to the array
-for name, amount in API.query_private('Balance')['result'].items():
+for name, amount in ApiHelper.get_balance():
     # get rid of unnecesarry 'X'
     # e.g. 'XXBT' => 'XBT'
     if name[0] == 'X':
