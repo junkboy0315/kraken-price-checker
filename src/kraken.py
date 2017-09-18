@@ -145,6 +145,10 @@ class Asset():
     def __init__(self, name, amount):
         self.name = name
         self.amount = float(amount)
+    """
+    Represents each asset of the balance.
+    """
+
         self.amount_as_money = None
         self.calc_via_XBT_needed = None
 
