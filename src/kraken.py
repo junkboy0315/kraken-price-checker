@@ -116,10 +116,10 @@ class AssetPair():
 
         if origin in IRREGULAR_ASSET_CLASSES:
             return origin + target
-        elif target in CURRENCIES:
+        if target in CURRENCIES:
             return 'X{}Z{}'.format(origin, target)
-        else:
-            return 'X{}X{}'.format(origin, target)
+
+        return 'X{}X{}'.format(origin, target)
 
     @classmethod
     def is_valid_pair(cls, origin, target):
