@@ -1,3 +1,7 @@
+"""
+Testfile for kraken.py
+"""
+
 import unittest
 import kraken
 
