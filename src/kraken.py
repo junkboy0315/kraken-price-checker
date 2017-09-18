@@ -147,9 +147,10 @@ for asset in balance:
         # XBT to Target currency
         query.add(AssetPair.generate_pair_name('XBT', TARGET_CURRENCY))
 
-# if the query contains asset pairs that are not valid,
+# If the query contains asset-pair-names that are not valid in the official API,
 # display that information and exit tht program.
-if not query <= AssetPair.VALID_PAIR_NAMES:
+# This probably means that calculation via XBT is not available.
+if query - AssetPair.VALID_PAIR_NAMES:
     sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_PAIR_NAMES))
 
 # join the query and make a string => 'XXBTZJPY,BCHXBT'
