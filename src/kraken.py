@@ -1,3 +1,7 @@
+"""
+This module checks the balance of the Kraken and displays it.
+"""
+
 import os
 import sys
 import krakenex
