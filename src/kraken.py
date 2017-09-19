@@ -11,9 +11,14 @@ API = krakenex.API(
     secret=os.environ['KRAKEN_SECRET'],
 )
 CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
+
+# Currency you want to display (EDIT THIS VALUE AS YOU LIKE)
 TARGET_CURRENCY = 'JPY'
 
+# Your balance of Kraken
 balance = []
+
+# asset-pair-names that need Ticker information
 query = set()
 
 class ApiHelper():
@@ -42,7 +47,7 @@ class ApiHelper():
     @classmethod
     def get_balance(cls):
         """
-        Get the balance data.
+        Get your balance data.
 
         Returns:
             dict_items: simple pair of asset and amount as follows.
@@ -124,7 +129,15 @@ class AssetPair():
     @classmethod
     def is_valid(cls, origin, target):
         """
-        check if the *pair of criptocurrency* is valid pair for the Kraken API.
+        check if the asset-pair is valid for the Kraken API.
+
+        Args:
+            origin(str): Original asset name. e.g. 'XBT'
+            target(str): Target asset name. e.g. 'JPY' or 'XRP'
+
+        Returns:
+            bool: True for valid, False for invalid.
+
         """
 
         if cls.generate_name(origin, target) in cls.VALID_NAMES:
@@ -152,15 +165,15 @@ for name, amount in ApiHelper.get_balance():
 
     balance.append(Asset(name, amount))
 
-# find asset-pairs need to be fetched
+# Find asset-pairs that need ticker information
 for asset in balance:
     if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
-        # query for asset which can be exchanged directly
+        # assets that can be calculated directly
         query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
     else:
-        # query for asset which can be exchanged via XBT
+        # assets requiring two-step calculaion via XBT
         asset.calc_via_XBT_needed = True
-        # Crypt to XBP
+        # Original cryptocurrency to XBP
         query.add(AssetPair.generate_name(asset.name, 'XBT'))
         # XBT to Target currency
         query.add(AssetPair.generate_name('XBT', TARGET_CURRENCY))
