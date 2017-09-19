@@ -22,9 +22,9 @@ class ApiHelper():
     """
 
     @classmethod
-    def get_asset_pairs(cls):
+    def get_asset_pair_names(cls):
         """
-        Get the asset-pair-names data.
+        Get the official asset-pair-names of Kraken.
 
         Returns:
             set(str): simple set of asset-pair-name as follows.
@@ -80,11 +80,11 @@ class AssetPair():
     handles things associated with asset pairs.
     """
 
-    # valid asset-pair-names get from the Kraken API
-    VALID_PAIR_NAMES = ApiHelper.get_asset_pairs()
+    # Store the official asset-pair-names data of Kraken.
+    VALID_PAIR_NAMES = ApiHelper.get_asset_pair_names()
 
     @classmethod
-    def generate_pair_name(cls, origin, target):
+    def generate_name(cls, origin, target):
         """ Generate an asset-pair-name used for the Kraken API
 
         Generate an asset-pair-name string like 'XXBTZJPY'
@@ -122,12 +122,12 @@ class AssetPair():
         return 'X{}X{}'.format(origin, target)
 
     @classmethod
-    def is_valid_pair(cls, origin, target):
+    def is_valid(cls, origin, target):
         """
         check if the *pair of criptocurrency* is valid pair for the Kraken API.
         """
 
-        if cls.generate_pair_name(origin, target) in cls.VALID_PAIR_NAMES:
+        if cls.generate_name(origin, target) in cls.VALID_PAIR_NAMES:
             return True
         return False
 
@@ -154,16 +154,16 @@ for name, amount in ApiHelper.get_balance():
 
 # find asset-pairs need to be fetched
 for asset in balance:
-    if AssetPair.is_valid_pair(asset.name, TARGET_CURRENCY):
+    if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
         # query for asset which can be exchanged directly
-        query.add(AssetPair.generate_pair_name(asset.name, TARGET_CURRENCY))
+        query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
     else:
         # query for asset which can be exchanged via XBT
         asset.calc_via_XBT_needed = True
         # Crypt to XBP
-        query.add(AssetPair.generate_pair_name(asset.name, 'XBT'))
+        query.add(AssetPair.generate_name(asset.name, 'XBT'))
         # XBT to Target currency
-        query.add(AssetPair.generate_pair_name('XBT', TARGET_CURRENCY))
+        query.add(AssetPair.generate_name('XBT', TARGET_CURRENCY))
 
 # If the query contains asset-pair-names that are not valid in the official API,
 # display that information and exit tht program.
@@ -180,9 +180,9 @@ ticker = ApiHelper.get_ticker(query)
 for asset in balance:
     if asset.calc_via_XBT_needed:
         # Crypt to XBP
-        pair1 = AssetPair.generate_pair_name(asset.name, 'XBT')
+        pair1 = AssetPair.generate_name(asset.name, 'XBT')
         # XBT to Target currency
-        pair2 = AssetPair.generate_pair_name('XBT', TARGET_CURRENCY)
+        pair2 = AssetPair.generate_name('XBT', TARGET_CURRENCY)
 
         result = asset.amount * (
             float(ticker[pair1]['c'][0]) *
@@ -192,7 +192,7 @@ for asset in balance:
         asset.amount_as_money = result
 
     else:
-        pair = AssetPair.generate_pair_name(asset.name, TARGET_CURRENCY)
+        pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
         asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
 
 print('-----------------------')
