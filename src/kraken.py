@@ -131,15 +131,6 @@ class AssetPair():
             return True
         return False
 
-    @classmethod
-    def is_valid_pair_name(cls, pair_name):
-        """
-        check if the *string* is valid asset-pair-string for the Kraken API
-        """
-
-        if pair_name in cls.VALID_PAIR_NAMES:
-            return True
-        return False
 
 class Asset():
     """
