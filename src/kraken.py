@@ -81,7 +81,7 @@ class AssetPair():
     """
 
     # Store the official asset-pair-names data of Kraken.
-    VALID_PAIR_NAMES = ApiHelper.get_asset_pair_names()
+    VALID_NAMES = ApiHelper.get_asset_pair_names()
 
     @classmethod
     def generate_name(cls, origin, target):
@@ -127,7 +127,7 @@ class AssetPair():
         check if the *pair of criptocurrency* is valid pair for the Kraken API.
         """
 
-        if cls.generate_name(origin, target) in cls.VALID_PAIR_NAMES:
+        if cls.generate_name(origin, target) in cls.VALID_NAMES:
             return True
         return False
 
@@ -168,8 +168,8 @@ for asset in balance:
 # If the query contains asset-pair-names that are not valid in the official API,
 # display that information and exit tht program.
 # This probably means that calculation via XBT is not available.
-if query - AssetPair.VALID_PAIR_NAMES:
-    sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_PAIR_NAMES))
+if query - AssetPair.VALID_NAMES:
+    sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_NAMES))
 
 # join the query and make a string => 'XXBTZJPY,BCHXBT'
 query = ','.join(query)
