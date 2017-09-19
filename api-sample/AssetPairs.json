@@ -1,4 +1,4 @@
-result = {
+{
     "BCHEUR": {
         "altname": "BCHEUR",
         "aclass_base": "currency",
