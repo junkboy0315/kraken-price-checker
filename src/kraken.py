@@ -15,12 +15,6 @@ CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
 # Currency you want to display (EDIT THIS VALUE AS YOU LIKE)
 TARGET_CURRENCY = 'JPY'
 
-# Your balance of Kraken
-balance = []
-
-# asset-pair-names that need Ticker information
-query = set()
-
 class ApiHelper():
     """
     Helper to get data from the API and return the results.
@@ -156,62 +150,72 @@ class Asset():
         self.amount_as_money = None
         self.calc_via_XBT_needed = None
 
-# store assets info to the array
-for name, amount in ApiHelper.get_balance():
-    # get rid of unnecesarry 'X'
-    # e.g. 'XXBT' => 'XBT'
-    if name[0] == 'X':
-        name = name[1::]
+def main():
+    # Your balance of Kraken
+    balance = []
 
-    balance.append(Asset(name, amount))
+    # asset-pair-names that need Ticker information
+    query = set()
 
-# Find asset-pairs that need ticker information
-for asset in balance:
-    if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
-        # assets that can be calculated directly
-        query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
-    else:
-        # assets requiring two-step calculaion via XBT
-        asset.calc_via_XBT_needed = True
-        # Original cryptocurrency to XBP
-        query.add(AssetPair.generate_name(asset.name, 'XBT'))
-        # XBT to Target currency
-        query.add(AssetPair.generate_name('XBT', TARGET_CURRENCY))
+    # store assets info to the array
+    for name, amount in ApiHelper.get_balance():
+        # get rid of unnecesarry 'X'
+        # e.g. 'XXBT' => 'XBT'
+        if name[0] == 'X':
+            name = name[1::]
 
-# If the query contains asset-pair-names that are not valid in the official API,
-# display that information and exit tht program.
-# This probably means that calculation via XBT is not available.
-if query - AssetPair.VALID_NAMES:
-    sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_NAMES))
+        balance.append(Asset(name, amount))
 
-# join the query and make a string => 'XXBTZJPY,BCHXBT'
-query = ','.join(query)
+    # Find asset-pairs that need ticker information
+    for asset in balance:
+        if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
+            # assets that can be calculated directly
+            query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
+        else:
+            # assets requiring two-step calculaion via XBT
+            asset.calc_via_XBT_needed = True
+            # Original cryptocurrency to XBP
+            query.add(AssetPair.generate_name(asset.name, 'XBT'))
+            # XBT to Target currency
+            query.add(AssetPair.generate_name('XBT', TARGET_CURRENCY))
 
-# get the ticker data
-ticker = ApiHelper.get_ticker(query)
+    # If the query contains asset-pair-names that are not valid in the official API,
+    # display that information and exit tht program.
+    # This probably means that calculation via XBT is not available.
+    if query - AssetPair.VALID_NAMES:
+        sys.exit('The query contains invalid AssetPair: ' + str(query - AssetPair.VALID_NAMES))
 
-for asset in balance:
-    if asset.calc_via_XBT_needed:
-        # Crypt to XBP
-        pair1 = AssetPair.generate_name(asset.name, 'XBT')
-        # XBT to Target currency
-        pair2 = AssetPair.generate_name('XBT', TARGET_CURRENCY)
+    # join the query and make a string => 'XXBTZJPY,BCHXBT'
+    query = ','.join(query)
 
-        result = asset.amount * (
-            float(ticker[pair1]['c'][0]) *
-            float(ticker[pair2]['c'][0])
-        )
+    # get the ticker data
+    ticker = ApiHelper.get_ticker(query)
 
-        asset.amount_as_money = result
+    for asset in balance:
+        if asset.calc_via_XBT_needed:
+            # Crypt to XBP
+            pair1 = AssetPair.generate_name(asset.name, 'XBT')
+            # XBT to Target currency
+            pair2 = AssetPair.generate_name('XBT', TARGET_CURRENCY)
 
-    else:
-        pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
-        asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
+            result = asset.amount * (
+                float(ticker[pair1]['c'][0]) *
+                float(ticker[pair2]['c'][0])
+            )
 
-print('-----------------------')
-for asset in balance:
-    print('{:6}: {:15,.0f}'.format(asset.name, asset.amount_as_money))
-print('-----------------------')
-print('total : {:15,.0f}'.format(sum([i.amount_as_money for i in balance])))
-print('-----------------------')
-print('{:>23s}'.format('(' + TARGET_CURRENCY + ')'))
+            asset.amount_as_money = result
+
+        else:
+            pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
+            asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
+
+    print('-----------------------')
+    for asset in balance:
+        print('{:6}: {:15,.0f}'.format(asset.name, asset.amount_as_money))
+    print('-----------------------')
+    print('total : {:15,.0f}'.format(sum([i.amount_as_money for i in balance])))
+    print('-----------------------')
+    print('{:>23s}'.format('(' + TARGET_CURRENCY + ')'))
+
+if __name__ == "__main__":
+    main()
