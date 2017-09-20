@@ -148,7 +148,6 @@ class Asset():
         self.name = _name
         self.amount = float(_amount)
         self.rate = None
-        self.calc_via_XBT_needed = None
 
     def getTotal(self):
         return self.amount * self.rate
@@ -176,10 +175,7 @@ def main():
             query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
         else:
             # assets requiring two-step calculaion via XBT
-            asset.calc_via_XBT_needed = True
-            # Original cryptocurrency to XBP
             query.add(AssetPair.generate_name(asset.name, 'XBT'))
-            # XBT to Target currency
             query.add(AssetPair.generate_name('XBT', TARGET_CURRENCY))
 
     # If the query contains asset-pair-names that are not valid in the official API,
@@ -195,19 +191,19 @@ def main():
     ticker = ApiHelper.get_ticker(query)
 
     for asset in balance:
-        if asset.calc_via_XBT_needed:
-            # Crypt to XBP
+        if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
+            # assets that can be calculated directly
+            pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
+            asset.rate = float(ticker[pair]['c'][0])
+        else:
+            # assets requiring two-step calculaion via XBT
             pair1 = AssetPair.generate_name(asset.name, 'XBT')
-            # XBT to Target currency
             pair2 = AssetPair.generate_name('XBT', TARGET_CURRENCY)
 
             asset.rate = (
                 float(ticker[pair1]['c'][0]) *
                 float(ticker[pair2]['c'][0])
             )
-        else:
-            pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
-            asset.rate = float(ticker[pair]['c'][0])
 
     print('')
     print('{:>6} {:>15}{:>15}{:>12}'.format(
