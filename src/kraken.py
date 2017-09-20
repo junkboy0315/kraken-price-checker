@@ -34,7 +34,7 @@ class ApiHelper():
         q = API.query_public('AssetPairs')
 
         if q['error']:
-            sys.exit('Failed to fetch AssetPairs.')
+            sys.exit('Failed to fetch AssetPairs: ' + q['error'])
 
         return set(q['result'].keys())
 
@@ -52,7 +52,7 @@ class ApiHelper():
         q = API.query_private('Balance')
 
         if q['error']:
-            sys.exit('Failed to fetch Balance.')
+            sys.exit('Failed to fetch Balance: ' + q['error'])
 
         return q['result'].items()
 
@@ -70,7 +70,7 @@ class ApiHelper():
         q = API.query_public('Ticker', {'pair': _query})
 
         if q['error']:
-            sys.exit('Failed to fetch Ticker.')
+            sys.exit('Failed to fetch Ticker: ' + q['error'])
 
         return q['result']
 
