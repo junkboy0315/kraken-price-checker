@@ -7,15 +7,14 @@ With this program, even if two-factor authentication is enabled, you can check t
 Moreover, you can check the balance in your favorite currency with the shell as follows:
 
 ```
------------------------
-XBT   :          52,622
-XRP   :          91,205
-ETH   :          97,309
-BCH   :           6,252
------------------------
-total :         247,388
------------------------
-                  (JPY)
+               Balance      Rate(JPY)  Total(JPY)
+-------------------------------------------------
+   XBT:        0.11916     444,875.00      53,013
+   XRP:    4,315.45550          20.96      90,463
+   ETH:        3.05850      32,350.00      98,942
+   BCH:        0.11916      52,495.25       6,256
+-------------------------------------------------
+ Total:                                   248,674
 ```
 
 ## Dependencies

@@ -147,8 +147,11 @@ class Asset():
     def __init__(self, _name, _amount):
         self.name = _name
         self.amount = float(_amount)
-        self.amount_as_money = None
+        self.rate = None
         self.calc_via_XBT_needed = None
+
+    def getTotal(self):
+        return self.amount * self.rate
 
 def main():
     # Your balance of Kraken
@@ -198,24 +201,36 @@ def main():
             # XBT to Target currency
             pair2 = AssetPair.generate_name('XBT', TARGET_CURRENCY)
 
-            result = asset.amount * (
+            asset.rate = (
                 float(ticker[pair1]['c'][0]) *
                 float(ticker[pair2]['c'][0])
             )
-
-            asset.amount_as_money = result
-
         else:
             pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
-            asset.amount_as_money = asset.amount * float(ticker[pair]['c'][0])
+            asset.rate = float(ticker[pair]['c'][0])
 
-    print('-----------------------')
+    print('')
+    print('{:>6} {:>15}{:>15}{:>12}'.format(
+        '',
+        'Balance',
+        'Rate(' + TARGET_CURRENCY + ')',
+        'Total(' + TARGET_CURRENCY + ')'
+    ))
+    print('-------------------------------------------------')
     for asset in balance:
-        print('{:6}: {:15,.0f}'.format(asset.name, asset.amount_as_money))
-    print('-----------------------')
-    print('total : {:15,.0f}'.format(sum([i.amount_as_money for i in balance])))
-    print('-----------------------')
-    print('{:>23s}'.format('(' + TARGET_CURRENCY + ')'))
+        print('{:>6}:{:>15,.5f}{:>15,.2f}{:>12,.0f}'.format(
+            asset.name,
+            asset.amount,
+            asset.rate,
+            asset.getTotal()
+        ))
+    print('-------------------------------------------------')
+    print('{:>6}:{:>15}{:>15}{:>12,.0f}'.format(
+        'Total',
+        '',
+        '',
+        sum([asset.getTotal() for asset in balance])
+    ))
 
 if __name__ == "__main__":
     main()
