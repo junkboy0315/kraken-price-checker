@@ -36,7 +36,7 @@ Moreover, you can check the balance in your favorite currency with the shell as 
 
 1. Edit `TARGET_CURRENCY` variable in the `src/kraken.py` as you like. (e.g. `'USD'` or `'JPY'`)
 
-1. run the program like `python src/kraken.py` and you'll get the balance.
+1. Run the `run.bat` or `run.sh` and you'll get the balance.
 
 ## License
 MIT
