@@ -34,7 +34,7 @@ You can also **record the history** of balance into the database if you want.
     KRAKEN_SECRET = *Your API secret*
     ```
 
-1. Edit `TARGET_CURRENCY` variable in the `src/kraken.py` as you like. (e.g. `'USD'` or `'JPY'`)
+1. Edit `TARGET_CURRENCY` variable in the `src/config.ini` as you like. (e.g. `'USD'` or `'JPY'`)
 
 1. Run the `run.bat` or `run.sh` and you'll get the balance.
 
@@ -42,7 +42,7 @@ You can also **record the history** of balance into the database if you want.
 
 1. Install [peewee](https://github.com/coleifer/peewee).
 
-1. Edit `RECORD_TO_DB` variable in the `src/kraken.py` to `True`
+1. Edit `RECORD_TO_DB` variable in the `src/config.ini` to `True`
 
 1. Set your OS enviroment variable as follows. You can choice any databases like sqlite, postgres, mysql and mariadb. Check [this page](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for more details.
     ```

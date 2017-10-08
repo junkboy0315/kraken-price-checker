@@ -2,6 +2,7 @@
 This module checks the balance of the Kraken and displays it.
 """
 
+import configparser
 import os
 import sys
 import krakenex
@@ -16,11 +17,15 @@ API = krakenex.API(
 )
 CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
 
-# Currency you want to display (EDIT THIS VALUE AS YOU LIKE)
-TARGET_CURRENCY = 'JPY'
+# Read a config file and setup constants
+config = configparser.SafeConfigParser()
+config.read('src/config.ini')
 
-# Record result to MariaDB (EDIT THIS VALUE AS YOU LIKE)
-RECORD_TO_DB = False
+TARGET_CURRENCY = config['settings']['TARGET_CURRENCY']
+if config['settings']['RECORD_TO_DB'] in ['True', 'TRUE']:
+    RECORD_TO_DB = True
+else:
+    RECORD_TO_DB = False
 
 class ApiHelper():
     """
