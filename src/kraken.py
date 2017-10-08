@@ -6,6 +6,10 @@ import os
 import sys
 import krakenex
 
+from datetime import datetime
+from peewee import *
+from playhouse.db_url import connect
+
 API = krakenex.API(
     key=os.environ['KRAKEN_KEY'],
     secret=os.environ['KRAKEN_SECRET'],
@@ -14,6 +18,9 @@ CURRENCIES = ['USD', 'EUR', 'JPY', 'CAD', 'GBP']
 
 # Currency you want to display (EDIT THIS VALUE AS YOU LIKE)
 TARGET_CURRENCY = 'JPY'
+
+# Record result to MariaDB (EDIT THIS VALUE AS YOU LIKE)
+RECORD_TO_DB = False
 
 class ApiHelper():
     """
@@ -152,6 +159,45 @@ class Asset():
     def getTotal(self):
         return self.amount * self.rate
 
+def record_to_db(balance):
+    "Record the balance data to the database you like"
+
+    # you can choice any dbs like sqlite, postgres, mysql and mariadb.
+    # DB_FOR_KRAKEN which is a enviroment variable
+    # should be like "mysql://user:passwd@ip:port/my_db"
+    #
+    # for more detail, see:
+    # http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url
+    db = connect(os.environ.get('DB_FOR_KRAKEN'))
+
+    class Log(Model):
+        asset = CharField()
+        date = DateTimeField()
+        amount = FloatField()
+        rate = FloatField()
+        total = FloatField()
+        currency = CharField()
+
+        class Meta:
+            database = db
+
+    # don't create tables if the 2nd arg is 'True'
+    db.create_tables([Log], True)
+
+    query = []
+
+    for asset in balance:
+        query.append({
+            'asset': asset.name,
+            'date': datetime.now(),
+            'amount': asset.amount,
+            'rate': asset.rate,
+            'total': asset.getTotal(),
+            'currency': TARGET_CURRENCY,
+        })
+
+    Log.insert_many(query).execute()
+
 def main():
     # Your balance of Kraken
     balance = []
@@ -227,6 +273,9 @@ def main():
         '',
         sum([asset.getTotal() for asset in balance])
     ))
+
+    if RECORD_TO_DB:
+        record_to_db(balance)
 
 if __name__ == "__main__":
     main()

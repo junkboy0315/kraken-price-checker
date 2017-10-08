@@ -1,10 +1,9 @@
 # Kraken price checker
 
-If you enable two-factor authentication with Kraken, logging in is time-consuming. 
+A tool to check the balance of [Kraken](https://www.kraken.com/) **more quickly** in your **favorite currency**.
 
-With this program, even if two-factor authentication is enabled, you can check the balance of  [Kraken](https://www.kraken.com/) more quickly. 
+You can also **record the history** of balance into the database if you want.
 
-Moreover, you can check the balance in your favorite currency with the shell as follows:
 
 ```
                Balance      Rate(JPY)  Total(JPY)
@@ -20,6 +19,7 @@ Moreover, you can check the balance in your favorite currency with the shell as 
 ## Dependencies
 - [Python 3](https://www.python.org/downloads/)
 - [veox/python3-krakenex](https://github.com/veox/python3-krakenex)
+- [peewee](https://github.com/coleifer/peewee) (if you want to use database)
 
 ## Setup
 1. install [veox/python3-krakenex](https://github.com/veox/python3-krakenex).
@@ -37,6 +37,18 @@ Moreover, you can check the balance in your favorite currency with the shell as 
 1. Edit `TARGET_CURRENCY` variable in the `src/kraken.py` as you like. (e.g. `'USD'` or `'JPY'`)
 
 1. Run the `run.bat` or `run.sh` and you'll get the balance.
+
+**To record the history in the database, additional settings are required as follows**
+
+1. Install [peewee](https://github.com/coleifer/peewee).
+
+1. Edit `RECORD_TO_DB` variable in the `src/kraken.py` to `True`
+
+1. Set your OS enviroment variable as follows. You can choice any databases like sqlite, postgres, mysql and mariadb. Check [this page](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for more details.
+    ```
+    DB_FOR_KRAKEN = mysql://user:passwd@ip:port/my_db
+    ```
+1. Run the `run.bat` or `run.sh`.
 
 ## License
 MIT
