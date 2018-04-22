@@ -221,7 +221,9 @@ def main():
 
     # Find asset-pairs that need ticker information
     for asset in balance:
-        if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
+        if asset.name[1:] in CURRENCIES:
+            continue
+        elif AssetPair.is_valid(asset.name, TARGET_CURRENCY):
             # assets that can be calculated directly
             query.add(AssetPair.generate_name(asset.name, TARGET_CURRENCY))
         else:
@@ -242,7 +244,9 @@ def main():
     ticker = ApiHelper.get_ticker(query)
 
     for asset in balance:
-        if AssetPair.is_valid(asset.name, TARGET_CURRENCY):
+        if asset.name[1:] in CURRENCIES:
+            asset.rate = 1
+        elif AssetPair.is_valid(asset.name, TARGET_CURRENCY):
             # assets that can be calculated directly
             pair = AssetPair.generate_name(asset.name, TARGET_CURRENCY)
             asset.rate = float(ticker[pair]['c'][0])
